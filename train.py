@@ -2,7 +2,7 @@
 Author: Suizhi HUANG && sunrisen.huang@gmail.com
 Date: 2024-03-24 14:43:13
 LastEditors: Suizhi HUANG && sunrisen.huang@gmail.com
-LastEditTime: 2024-03-25 09:32:43
+LastEditTime: 2024-03-25 09:45:41
 FilePath: /HPV_test/train.py
 Description: 
 Copyright (c) 2024 by $Suizhi HUANG, All Rights Reserved. 
@@ -85,7 +85,7 @@ def train():
     data, test = train_test_split(data, test_size=0.1)
     y_test = test[target].values
     # print number of positive and negative samples in test set
-    print(test['label'].value_counts())
+    # print(test['label'].value_counts())
     y = data[target].values
 
     # Data balancing
@@ -171,15 +171,15 @@ def train():
         # logger,
         train_model_input,
         y,
-        batch_size=128,
+        batch_size=64,
         epochs=args.n_epochs,
         verbose=2,
-        validation_split=0.3,
+        validation_split=0.1,
     )
     # log the history into logger
     # logger.info(history.history)
 
-    print(model.evaluate(test_model_input, y_test, batch_size=128))
+    print(model.evaluate(test_model_input, y_test, batch_size=64))
 
     torch.save(
         model.state_dict(),
