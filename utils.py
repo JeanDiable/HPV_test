@@ -1,30 +1,56 @@
+'''
+Author: Suizhi HUANG && sunrisen.huang@gmail.com
+Date: 2024-03-24 21:10:35
+LastEditors: Suizhi HUANG && sunrisen.huang@gmail.com
+LastEditTime: 2024-03-24 21:10:35
+FilePath: /HPV_test/utils.py
+Description: 
+Copyright (c) 2024 by $Suizhi HUANG, All Rights Reserved. 
+'''
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
 
-def binary_logit_adjust_loss1(input, target, positive_samples=493, negative_samples=6126, reduction="mean"):
+def binary_logit_adjust_loss1(
+    input, target, positive_samples=632, negative_samples=5987, reduction="mean"
+):
     """Logit adjust loss for binary classification problems."""
-    adjusted_input = 1.0 / (((negative_samples / positive_samples) * 1 * (1 / input - 1)) + 1)
-    loss = torch.nn.functional.binary_cross_entropy(adjusted_input, target, reduction=reduction)
+    adjusted_input = 1.0 / (
+        ((negative_samples / positive_samples) * 1 * (1 / input - 1)) + 1
+    )
+    loss = torch.nn.functional.binary_cross_entropy(
+        adjusted_input, target, reduction=reduction
+    )
     return loss
 
 
-def binary_logit_adjust_loss(input, target, positive_samples=493, negative_samples=6126, reduction="mean"):
+def binary_logit_adjust_loss(
+    input, target, positive_samples=632, negative_samples=5987, reduction="mean"
+):
     """Logit adjust loss for binary classification problems."""
     sum = positive_samples + negative_samples
-    logit_adjustment1 = (negative_samples / sum)
-    logit_adjustment2 = (positive_samples / sum)
-    adjusted_logits = input + 1.0 * torch.log((1 - target) * logit_adjustment1 + target * logit_adjustment2)
-    loss = torch.nn.functional.binary_cross_entropy_with_logits(adjusted_logits, target, reduction=reduction)
+    logit_adjustment1 = negative_samples / sum
+    logit_adjustment2 = positive_samples / sum
+    adjusted_logits = input + 1.0 * torch.log(
+        (1 - target) * logit_adjustment1 + target * logit_adjustment2
+    )
+    loss = torch.nn.functional.binary_cross_entropy_with_logits(
+        adjusted_logits, target, reduction=reduction
+    )
     return loss
 
 
-def binary_logit_adjust_loss2(input, target, positive_samples=493, negative_samples=6126, reduction="mean"):
+def binary_logit_adjust_loss2(
+    input, target, positive_samples=632, negative_samples=5987, reduction="mean"
+):
     """Logit adjust loss for binary classification problems."""
     logit_adjustment = negative_samples / positive_samples
     adjusted_logits = input + torch.log((1 - target) * logit_adjustment + target)
-    loss = torch.nn.functional.binary_cross_entropy_with_logits(adjusted_logits, target, reduction=reduction)
+    loss = torch.nn.functional.binary_cross_entropy_with_logits(
+        adjusted_logits, target, reduction=reduction
+    )
     return loss
 
 
@@ -52,7 +78,9 @@ class FocalLoss(nn.Module):
 
     def forward(self, inputs, targets, reduction):
         if self.logits:
-            BCE_loss = F.binary_cross_entropy_with_logits(inputs, targets, reduction="none")
+            BCE_loss = F.binary_cross_entropy_with_logits(
+                inputs, targets, reduction="none"
+            )
         else:
             BCE_loss = F.binary_cross_entropy(inputs, targets, reduction="none")
         pt = torch.exp(-BCE_loss)
