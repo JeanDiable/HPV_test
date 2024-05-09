@@ -2,7 +2,7 @@
 Author: Suizhi HUANG && sunrisen.huang@gmail.com
 Date: 2024-03-24 11:56:55
 LastEditors: Suizhi HUANG && sunrisen.huang@gmail.com
-LastEditTime: 2024-03-24 17:48:41
+LastEditTime: 2024-05-08 22:27:21
 FilePath: /HPV_test/settings.py
 Description: 
 Copyright (c) 2024 by $Suizhi HUANG, All Rights Reserved. 
@@ -27,7 +27,8 @@ def parse_opts():
     )
     parser.add_argument(
         '--train_file',
-        default='shuffled_hpv231229.csv',
+        default='hpv231229.csv',
+        # default='modified_new_data.csv',
         type=str,
         help='Training data.',
     )

@@ -1,8 +1,19 @@
-from sklearn import metrics
+'''
+Author: Suizhi HUANG && sunrisen.huang@gmail.com
+Date: 2024-05-08 23:01:16
+LastEditors: Suizhi HUANG && sunrisen.huang@gmail.com
+LastEditTime: 2024-05-08 23:19:23
+FilePath: /HPV_test/metrics.py
+Description: 
+Copyright (c) 2024 by $Suizhi HUANG, All Rights Reserved. 
+'''
+
 import numpy as np
+from sklearn import metrics
 
 
 def eval_metrics(y_true: np.ndarray, y_pred: np.ndarray):
+    print(y_true.shape, y_pred.shape)
     y_true = y_true.astype(np.int32)
     # 计算 AUC
     auc = metrics.roc_auc_score(y_true, y_pred)
@@ -20,6 +31,11 @@ def eval_metrics(y_true: np.ndarray, y_pred: np.ndarray):
     # 计算 Recall
     recall = metrics.recall_score(y_true, y_pred_label)  # 类型: float
 
+    sensitivity = metrics.recall_score(y_true, y_pred_label)
+
+    specifity = metrics.recall_score(y_true, y_pred_label, pos_label=0)
+    fpr, tpr, _ = metrics.roc_curve(y_true, y_pred_label)
+    auc_score = metrics.auc(fpr, tpr)
     # 计算 F1 Score
     f1 = metrics.f1_score(y_true, y_pred_label)  # 类型: float
 
@@ -28,7 +44,12 @@ def eval_metrics(y_true: np.ndarray, y_pred: np.ndarray):
         'accuracy': accuracy,
         'precision': precision,
         'recall': recall,
-        'f1': f1
+        'sensitivity': sensitivity,
+        'specifity': specifity,
+        'f1': f1,
+        'fpr': fpr,
+        'tpr': tpr,
+        'auc_score': auc_score,
     }
 
     return ret

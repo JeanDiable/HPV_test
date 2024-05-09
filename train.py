@@ -2,7 +2,7 @@
 Author: Suizhi HUANG && sunrisen.huang@gmail.com
 Date: 2024-03-24 14:43:13
 LastEditors: Suizhi HUANG && sunrisen.huang@gmail.com
-LastEditTime: 2024-03-25 09:45:41
+LastEditTime: 2024-05-09 10:28:08
 FilePath: /HPV_test/train.py
 Description: 
 Copyright (c) 2024 by $Suizhi HUANG, All Rights Reserved. 
@@ -11,6 +11,7 @@ Copyright (c) 2024 by $Suizhi HUANG, All Rights Reserved.
 import os
 import random
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
@@ -24,6 +25,7 @@ from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 # from extra.basemodel import BaseModel
 from log import get_logger
 from map import dense_feature_list, sparse_feature_list
+from metrics import eval_metrics
 from settings import parse_opts
 from utils import FocalLoss, binary_focal_loss, binary_logit_adjust_loss1
 
@@ -81,8 +83,11 @@ def train():
         )
         for feat in dense_features
     ]
+    # please make the test dataset have part of the training data
 
     data, test = train_test_split(data, test_size=0.1)
+    # mix test and half of the data into a new test
+    test = pd.concat([test, data.sample(frac=0.4)])
     y_test = test[target].values
     # print number of positive and negative samples in test set
     # print(test['label'].value_counts())
@@ -156,7 +161,16 @@ def train():
     model.compile(
         args.optimizer,
         FocalLoss() if use_focal_loss else "binary_crossentropy",
-        metrics=["binary_crossentropy", "auc", "acc", "pre", "recall", "f1"],
+        metrics=[
+            "binary_crossentropy",
+            "auc",
+            "acc",
+            "pre",
+            "recall",
+            'sensitivity',
+            'specifity',
+            "f1",
+        ],
     )
     path = os.path.join("./exp/", args.exp_dir)
     os.makedirs(path, exist_ok=True)
@@ -179,7 +193,19 @@ def train():
     # log the history into logger
     # logger.info(history.history)
 
-    print(model.evaluate(test_model_input, y_test, batch_size=64))
+    # print(model.evaluate(test_model_input, y_test, batch_size=64))
+    res = eval_metrics(y_test, model.predict(test_model_input, batch_size=64))
+    print(res)
+    fpr = res['fpr']
+    tpr = res['tpr']
+    auc_score = res['auc_score']
+    plt.plot(fpr, tpr, label=f'AUC = {auc_score:.2f}')  # 绘制ROC曲线，标注AUC的值
+    # 随即分类器没有分类能力，其FPR=TPR。随机分类器的性能通常表示为ROC曲线上的对角线
+    plt.xlabel('False Positive Rate')  # x轴标签为FPR
+    plt.ylabel('True Positive Rate')  # y轴标签为TPR
+    plt.title('ROC Curve')  # 设置标题
+    plt.legend()
+    plt.savefig("./exp/roc.pdf")
 
     torch.save(
         model.state_dict(),

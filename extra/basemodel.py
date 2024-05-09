@@ -1,3 +1,13 @@
+'''
+Author: Suizhi HUANG && sunrisen.huang@gmail.com
+Date: 2024-05-08 23:15:07
+LastEditors: Suizhi HUANG && sunrisen.huang@gmail.com
+LastEditTime: 2024-05-08 23:15:07
+FilePath: /HPV_test/extra/basemodel.py
+Description: 
+Copyright (c) 2024 by $Suizhi HUANG, All Rights Reserved. 
+'''
+
 # -*- coding:utf-8 -*-
 """
 
@@ -25,9 +35,15 @@ except ImportError:
     from tensorflow.python.keras._impl.keras.callbacks import CallbackList
 
 from ..callbacks import History
-from ..inputs import (DenseFeat, SparseFeat, VarLenSparseFeat,
-                      build_input_features, create_embedding_matrix,
-                      get_varlen_pooling_list, varlen_embedding_lookup)
+from ..inputs import (
+    DenseFeat,
+    SparseFeat,
+    VarLenSparseFeat,
+    build_input_features,
+    create_embedding_matrix,
+    get_varlen_pooling_list,
+    varlen_embedding_lookup,
+)
 from ..layers import PredictionLayer
 from ..layers.utils import slice_arrays
 
