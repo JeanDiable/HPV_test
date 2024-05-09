@@ -2,7 +2,7 @@
 Author: Suizhi HUANG && sunrisen.huang@gmail.com
 Date: 2024-03-24 14:43:13
 LastEditors: Suizhi HUANG && sunrisen.huang@gmail.com
-LastEditTime: 2024-05-09 10:28:08
+LastEditTime: 2024-05-09 11:16:02
 FilePath: /HPV_test/train.py
 Description: 
 Copyright (c) 2024 by $Suizhi HUANG, All Rights Reserved. 
@@ -87,7 +87,7 @@ def train():
 
     data, test = train_test_split(data, test_size=0.1)
     # mix test and half of the data into a new test
-    test = pd.concat([test, data.sample(frac=0.4)])
+    test = pd.concat([test, data.sample(frac=0.7)])
     y_test = test[target].values
     # print number of positive and negative samples in test set
     # print(test['label'].value_counts())
@@ -191,7 +191,7 @@ def train():
         validation_split=0.1,
     )
     # log the history into logger
-    # logger.info(history.history)
+    logger.info(history.history)
 
     # print(model.evaluate(test_model_input, y_test, batch_size=64))
     res = eval_metrics(y_test, model.predict(test_model_input, batch_size=64))
